@@ -1,0 +1,118 @@
+✅ Add middleware per route group easily eg- app.use(router)
+allows you to apply middleware or route prefixes to a group of routes cleanly.
+
+app.use is used to run middlewares before funcitns but also used to route requests that start with certain substring over to another router
+Parsed data = data that’s been converted from raw format (like JSON or form data) into usable JavaScript objects in req.body.
+JSON is a text-based data format used for storing and transferring data.
+JavaScript objects are actual in-memory structures used in your JS code.
+
+
+
+Use JSON.parse(json) only when you're manually converting a string.
+
+Use express.json() once at the top of your app, so your API routes can safely access req.body.
+
+express.json()
+It tells Express:
+
+“Whenever you receive a request with a JSON body, automatically parse it and put the result into req.body.”
+
+
+Great! Let's break it down **very simply**.
+
+---
+
+## 🔑 What is Stateless Authentication?
+
+"**Stateless**" means the **server doesn’t remember anything about the user between requests**. Instead, the **user proves who they are on every request** using a **token** (like a passport stamp).
+
+---
+
+## 📦 Example (Without and With Tokens)
+
+### 🧱 **Without Token (Stateful Authentication)**
+
+1. You log in with **email + password**.
+2. Server stores a **session** (like a note saying "User 123 is logged in").
+3. Server gives you a **session ID** (like a ticket number).
+4. You send the session ID with every request.
+5. Server checks its memory: "Do I have a session for this ID?"
+
+✅ Good: Easy to implement
+❌ Bad: Server must **store session info**, becomes slow at scale
+
+---
+
+### 🔐 **With Token (Stateless Authentication, like JWT)**
+
+1. You log in with **email + password**.
+2. Server verifies and sends you a **token** (like a passport).
+3. This **token has encoded info** (like your userId and expiry).
+4. You send this token with **every request** in the `Authorization` header.
+5. Server **verifies the token** and reads your userId from it — no need to remember anything!
+
+✅ Good: Server doesn’t need to remember anything
+✅ Scales well
+❌ Token can be stolen if not protected (e.g., via HTTPS)
+
+---
+
+## 🎯 Analogy: Passport vs Ticket
+
+|                   | **Stateful (Session-based)**              | **Stateless (Token-based)**         |
+| ----------------- | ----------------------------------------- | ----------------------------------- |
+| Auth Proof        | Ticket checked against a list at the gate | Passport shows all info directly    |
+| Server Remembers? | Yes — keeps session info                  | No — just checks the passport/token |
+| Token Expiry      | Managed on server                         | Built into token (e.g., 1 hour)     |
+| Common Tool       | Express-session                           | JWT (JSON Web Token)                |
+
+---
+
+## 📌 Why verify token on *every request*?
+
+Because the **server doesn't remember you** — it’s like:
+
+> "I don’t know you. Show me your passport (token) again."
+
+The token:
+
+* Proves you're logged in.
+* Has your user ID.
+* Might even contain your role (e.g., admin).
+
+The server only **verifies** and **reads info** from it, every time. No memory required!
+
+---
+
+## 🔄 Real Life Example
+
+* 🧑 You log in → server gives JWT: `eyJhbGciOi...`
+* 🧑 You save it in localStorage or HTTP-only cookie.
+* 🧑 You send this token in `Authorization: Bearer <token>` header when calling `/update-profile`.
+* 🖥️ Server sees the token, verifies it, extracts user ID, and updates your name.
+
+---
+
+user sends token on every reqest
+Token verification: Every time the user sends a request, the server checks the token for validity.
+
+If the token is valid, the server decodes it to retrieve the user ID (or other relevant information).
+Server-Side:
+
+The server extracts the token from the Authorization header.
+
+It then verifies the token to check if it's valid (e.g., checking the signature, expiration date, etc.).
+
+If valid, the server decodes the token to extract the user information (usually the user ID or other relevant data).
+
+The server then uses the decoded user ID to fetch the user's data or perform actions (such as viewing their profile, making a purchase, etc.)
+
+
+you cannot create balance for someone who doesnt exist as user- references in db
+you cannot put something in the balances table that doesnt already exisst in the users table
+
+
+either complete all database transactions/calls together or roll back the transactions if something happens in the mdidle, 
+eg- credit call happening making user2 go from 20=>120
+but debit call failed keeping user1=1000 as is
+we want- both of them to happen together or none of them happen
