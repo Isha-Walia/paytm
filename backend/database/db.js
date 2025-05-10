@@ -8,7 +8,7 @@ const connectDb= async(req,res)=>{
     
    } catch (error) {
     console.log(error)
-    comsole.log("failure: cant connect to db")
+    console.log("failure: cant connect to db")
    }
 }
 
